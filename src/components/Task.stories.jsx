@@ -1,7 +1,7 @@
-import Task from './Task';
+import TaskItem from './TaskItem';
 
 export default {
-  component: Task,
+  component: TaskItem,
   title: 'Task',
   tags: ['autodocs'],
 };

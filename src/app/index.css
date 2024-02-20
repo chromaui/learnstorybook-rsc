@@ -144,7 +144,7 @@ textarea {
   visibility: hidden;
 }
 
-.checkbox input[type='checkbox'] + span:before {
+.checkbox input[type='checkbox'] + .checkbox-custom:before {
   position: absolute;
   top: 50%;
   right: auto;
@@ -159,7 +159,7 @@ textarea {
   display: block;
 }
 
-.checkbox input[type='checkbox']:checked + span:before {
+.checkbox input[type='checkbox']:checked + .checkbox-custom:before {
   font-size: 16px;
   line-height: 24px;
   box-shadow: none;

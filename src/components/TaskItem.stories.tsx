@@ -1,10 +1,19 @@
+import { StoryObj, Meta } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
+
 import TaskItem from './TaskItem';
 
-export default {
+const meta = {
   component: TaskItem,
-  title: 'Task',
-  tags: ['autodocs'],
-};
+  args: {
+    onPinTask: async () => action('onPinTask')(),
+    onArchiveTask: async () => action('onArchiveTask')(),
+  },
+} satisfies Meta<typeof TaskItem>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
 
 export const Default = {
   args: {
@@ -14,7 +23,7 @@ export const Default = {
       state: 'TASK_INBOX',
     },
   },
-};
+} satisfies Story;
 
 export const Pinned = {
   args: {
@@ -23,7 +32,7 @@ export const Pinned = {
       state: 'TASK_PINNED',
     },
   },
-};
+} satisfies Story;
 
 export const Archived = {
   args: {
@@ -32,7 +41,7 @@ export const Archived = {
       state: 'TASK_ARCHIVED',
     },
   },
-};
+} satisfies Story;
 
 const longTitleString = `This task's name is absurdly large. In fact, I think if I keep going I might end up with content overflow. What will happen? The star that represents a pinned task could have text overlapping. The text could cut-off abruptly when it reaches the star. I hope not!`;
 
@@ -43,4 +52,4 @@ export const LongTitle = {
       title: longTitleString,
     },
   },
-};
+} satisfies Story;

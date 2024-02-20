@@ -144,7 +144,12 @@ textarea {
   visibility: hidden;
 }
 
+.checkbox .checkbox-custom {
+  visibility: hidden;
+}
+
 .checkbox input[type='checkbox'] + .checkbox-custom:before {
+  visibility: visible;
   position: absolute;
   top: 50%;
   right: auto;

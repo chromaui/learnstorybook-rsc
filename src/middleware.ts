@@ -34,9 +34,20 @@ export function storyMiddleware(request: NextRequest) {
   return response;
 }
 
+export function storyResetMiddleware(request: NextRequest) {
+  console.log('reset middleware');
+  const response = NextResponse.redirect(new URL('/', request.url));
+  response.cookies.delete(storyCookieName);
+  return response;
+}
+
 export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/storybook-redirect/')) {
     return storyMiddleware(request);
+  }
+
+  if (request.nextUrl.pathname.startsWith('/storybook-reset')) {
+    return storyResetMiddleware(request);
   }
 
   const sessionCookie = request.cookies.get(sessionIdCookieName);

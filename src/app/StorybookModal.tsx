@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { storyIndex } from '../storyIndex';
 import { getLastRequestMockData } from '../mock';
 import { StoryForm } from './StoryForm';
@@ -6,6 +5,9 @@ import { URL } from 'url';
 import { readFile, writeFile } from 'fs/promises';
 import { revalidatePath } from 'next/cache';
 import { StorybookLink } from './StorybookLink';
+import { parse } from 'cookie';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
 
 export function StorybookModal({}) {
   async function saveStory(url: string) {
@@ -55,8 +57,10 @@ export function StorybookModal({}) {
 
   async function revalidateRoot() {
     'use server';
-    revalidatePath('/');
+    revalidatePath('/', 'layout');
   }
+
+  const currentStoryId = cookies().get('__storyId__')?.value;
 
   return (
     <div
@@ -72,12 +76,20 @@ export function StorybookModal({}) {
       <ul>
         {Object.entries(storyIndex).map(([id, { title, name }]) => (
           <li key={id}>
-            <StorybookLink entry={{ id, title, name }} revalidateRoot={revalidateRoot} />
+            <StorybookLink
+              entry={{ id, title, name }}
+              isCurrentStory={id === currentStoryId}
+              revalidateRoot={revalidateRoot}
+            />
           </li>
         ))}
 
         <li>
-          <StoryForm saveStory={saveStory} />
+          {currentStoryId ? (
+            <StorybookLink revalidateRoot={revalidateRoot} />
+          ) : (
+            <StoryForm saveStory={saveStory} />
+          )}
         </li>
       </ul>
     </div>

@@ -5,22 +5,21 @@ import type { IndexEntry } from '@/storyIndex';
 
 // This is really dumb by nextjs
 export const StorybookLink = ({
-  entry: { id, title, name },
+  entry,
+  isCurrentStory = false,
   revalidateRoot,
 }: {
-  entry: Pick<IndexEntry, 'title' | 'name'> & { id: string };
+  entry?: Pick<IndexEntry, 'title' | 'name'> & { id: string };
+  isCurrentStory?: boolean;
   revalidateRoot: () => Promise<void>;
 }) => {
-  // TODO: this is a hack
-  const isCurrentStory = !!document?.cookie?.match(`${id}($|;)`);
-
   return (
     <Link
       style={{ fontWeight: isCurrentStory ? 'bold' : 'normal' }}
-      href={`/storybook-redirect/${id}`}
+      href={entry ? `/storybook-redirect/${entry.id}` : '/storybook-reset'}
       onClick={() => revalidateRoot()}
     >
-      {title}: {name}
+      {entry ? `${entry.title}: ${entry.name}` : 'Reset Story'}
     </Link>
   );
 };

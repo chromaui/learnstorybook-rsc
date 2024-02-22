@@ -281,7 +281,6 @@ textarea {
   line-height: 20px;
   display: flex;
   flex-wrap: wrap;
-  height: 3rem;
   width: 100%;
   background: white;
   transition: all ease-out 150ms;
@@ -337,6 +336,10 @@ textarea {
 }
 
 .list-item:hover {
+  background-image: linear-gradient(to bottom, #e5f9f7 0%, #f0fffd 100%);
+}
+
+.list-item.expanded {
   background-image: linear-gradient(to bottom, #e5f9f7 0%, #f0fffd 100%);
 }
 
@@ -462,4 +465,10 @@ textarea {
   display: inline-block;
   vertical-align: top;
   max-width: 100%;
+}
+
+.task-description {
+  padding: 0 50px;
+  font-size: 12px;
+  width: 100%;
 }

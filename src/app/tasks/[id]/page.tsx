@@ -1,9 +1,9 @@
 import React from 'react';
 import TaskList from '@/components/TaskList';
 import { getTasks } from '@/lib/tasks';
-import './index.css';
+import '../../index.css';
 
-export default async function InboxScreen() {
+export default async function TaskScreen({ params: { id } }: { params: { id: string } }) {
   try {
     const tasks = await getTasks();
     return (
@@ -11,7 +11,7 @@ export default async function InboxScreen() {
         <nav>
           <h1 className="title-page">Taskbox</h1>
         </nav>
-        <TaskList tasks={tasks} />
+        <TaskList tasks={tasks} expanded={id} />
       </div>
     );
   } catch (error) {

@@ -2,7 +2,7 @@ import React from 'react';
 import TaskItem from './TaskItem';
 import { updateTaskState, Task } from '../lib/tasks';
 
-export default function TaskList({ tasks }: { tasks: Task[] }) {
+export default function TaskList({ tasks, expanded }: { tasks: Task[]; expanded?: Task['id'] }) {
   const tasksInOrder = [
     ...tasks.filter((t) => t.state === 'TASK_PINNED'),
     ...tasks.filter((t) => t.state !== 'TASK_PINNED'),
@@ -29,6 +29,7 @@ export default function TaskList({ tasks }: { tasks: Task[] }) {
       {filteredTasks.map((task) => (
         <TaskItem
           key={task.id}
+          expanded={expanded === task.id}
           task={task}
           onPinTask={updateTaskState.bind(null, { id: task.id, newTaskState: 'TASK_PINNED' })}
           onArchiveTask={updateTaskState.bind(null, { id: task.id, newTaskState: 'TASK_ARCHIVED' })}

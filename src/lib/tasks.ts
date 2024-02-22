@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache';
+import { faker } from '@faker-js/faker';
 
 let seeded = false;
 
@@ -24,6 +25,17 @@ export const getTasks = async () => {
   if (!seeded) await seed();
 
   return tasks;
+};
+
+export const getTask = async (id: Task['id']) => {
+  if (!seeded) await seed();
+
+  const task = tasks.find((t) => t.id === id);
+
+  return {
+    ...task,
+    description: faker.lorem.paragraph(2),
+  };
 };
 
 export const updateTaskState = async ({

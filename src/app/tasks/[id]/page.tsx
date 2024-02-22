@@ -1,6 +1,6 @@
 import React from 'react';
 import TaskList from '@/components/TaskList';
-import { getTasks } from '@/lib/tasks';
+import { getTasks } from '@/data/tasks';
 import '../../index.css';
 
 export default async function TaskScreen({ params: { id } }: { params: { id: string } }) {

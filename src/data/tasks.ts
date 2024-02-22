@@ -8,6 +8,8 @@ export type Task = {
   title: string;
   state: 'TASK_ARCHIVED' | 'TASK_INBOX' | 'TASK_PINNED';
 };
+export type TaskWithDescription = Task & { description: string };
+
 let tasks: Task[] = [];
 
 async function seed() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task, getTask } from '@/lib/tasks';
+import { Task, getTask } from '@/data/tasks';
 import Link from 'next/link';
 
 export default async function TaskItem({

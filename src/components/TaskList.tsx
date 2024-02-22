@@ -1,6 +1,6 @@
 import React from 'react';
 import TaskItem from './TaskItem';
-import { updateTaskState, Task } from '../lib/tasks';
+import { updateTaskState, Task } from '../data/tasks';
 
 export default function TaskList({ tasks, expanded }: { tasks: Task[]; expanded?: Task['id'] }) {
   const tasksInOrder = [

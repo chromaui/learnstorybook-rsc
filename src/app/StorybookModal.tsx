@@ -4,6 +4,8 @@ import { getLastRequestMockData } from '../mock';
 import { StoryForm } from './StoryForm';
 import { URL } from 'url';
 import { readFile, writeFile } from 'fs/promises';
+import { revalidatePath } from 'next/cache';
+import { StorybookLink } from './StorybookLink';
 
 export function StorybookModal({}) {
   async function saveStory(url: string) {
@@ -51,6 +53,11 @@ export function StorybookModal({}) {
     await writeFile(indexFile, indexContents.replace('};', `${indexEntry}\n};`));
   }
 
+  async function revalidateRoot() {
+    'use server';
+    revalidatePath('/');
+  }
+
   return (
     <div
       style={{
@@ -65,9 +72,7 @@ export function StorybookModal({}) {
       <ul>
         {Object.entries(storyIndex).map(([id, { title, name }]) => (
           <li key={id}>
-            <Link href={`/storybook-redirect/${id}`}>
-              {title}: {name}
-            </Link>
+            <StorybookLink entry={{ id, title, name }} revalidateRoot={revalidateRoot} />
           </li>
         ))}
 

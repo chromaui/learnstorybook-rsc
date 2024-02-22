@@ -1,7 +1,7 @@
 import * as inboxStories from '@/app/stories';
 import * as taskStories from '@/app/tasks/[id]/stories';
 
-type IndexEntry = {
+export type IndexEntry = {
   title: string;
   name: string;
   csf: Record<any, any>;

@@ -47,7 +47,6 @@ const setSessionMockDataKey = (key: string, data: any) => {
   lastRequestMockDataPerSession[sessionId] = requestMockData;
 };
 
-type Exports = Record<string, any>;
 export function mockFn<TFunction extends (...args: any[]) => any>(
   original: TFunction,
   mockKey: string
@@ -56,6 +55,7 @@ export function mockFn<TFunction extends (...args: any[]) => any>(
     const mockData = getStoryMockData();
 
     if (mockData?.[mockKey]) {
+      if (mockData[mockKey] instanceof Error) throw mockData[mockKey];
       return mockData[mockKey];
     }
 

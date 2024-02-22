@@ -5,13 +5,30 @@ import { URL } from 'url';
 import { readFile, writeFile } from 'fs/promises';
 import { revalidatePath } from 'next/cache';
 import { StorybookLink } from './StorybookLink';
-import { parse } from 'cookie';
 import { cookies } from 'next/headers';
-import Link from 'next/link';
+
+export const sanitize = (string: string) => {
+  return (
+    string
+      .toLowerCase()
+      // eslint-disable-next-line no-useless-escape
+      .replace(/[ ’–—―′¿'`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '')
+  );
+};
 
 export function StorybookModal({}) {
-  async function saveStory(url: string) {
+  async function saveStory(formData: FormData) {
     'use server';
+
+    const name = formData.get('name');
+    const url = formData.get('url');
+
+    if (!name || !url) {
+      throw new Error('invalid form data');
+    }
 
     const $mock = getLastRequestMockData();
 
@@ -19,14 +36,22 @@ export function StorybookModal({}) {
     const { pathname, searchParams } = new URL(url, 'https://whatever.com');
     const sort = searchParams.get('sort');
     const $url = {
-      number: pathname.split('/').at(-1),
       ...(sort && { sort }),
     };
+    let title: string;
+    let isIndex = false;
+    if (pathname === '/') {
+      title = 'Inbox';
+      isIndex = true;
+    } else {
+      title = 'Task Page';
 
-    const title = 'Pages / Build';
-    const name = 'New Build';
-    const exportName = 'NewBuild';
-    const id = 'pages-build--new-build';
+      // @ts-ignore
+      $url.id = pathname.split('/').at(-1);
+    }
+
+    const exportName = name.toString().replace(' ', '');
+    const id = `${sanitize(title)}--${sanitize(exportName)}`;
 
     const story = `
       export const ${exportName} = {
@@ -37,7 +62,7 @@ export function StorybookModal({}) {
       };
     `;
 
-    const csfFile = './src/page-stories/build.stories.ts';
+    const csfFile = isIndex ? './src/app/stories.tsx' : './src/app/tasks/[id]/stories.tsx';
     const csfContents = (await readFile(csfFile)).toString('utf-8');
     await writeFile(csfFile, `${csfContents}\n\n${story}`);
 
@@ -45,14 +70,15 @@ export function StorybookModal({}) {
       '${id}': {
         title: '${title}',
         name: '${name}',
-        csf: stories,
+        csf: ${isIndex ? 'inboxStories' : 'taskStories'},
         key: '${exportName}',
       },
     `;
 
     const indexFile = './src/storyIndex.ts';
     const indexContents = (await readFile(indexFile)).toString('utf8');
-    await writeFile(indexFile, indexContents.replace('};', `${indexEntry}\n};`));
+    const match = 'export const storyIndex: Record<string, IndexEntry> = {';
+    await writeFile(indexFile, indexContents.replace(`${match}`, `${match}\n${indexEntry}`));
   }
 
   async function revalidateRoot() {
@@ -73,25 +99,25 @@ export function StorybookModal({}) {
         background: '#eee',
       }}
     >
-      <ul>
+      <div>
         {Object.entries(storyIndex).map(([id, { title, name }]) => (
-          <li key={id}>
+          <div key={id}>
             <StorybookLink
               entry={{ id, title, name }}
               isCurrentStory={id === currentStoryId}
               revalidateRoot={revalidateRoot}
             />
-          </li>
+          </div>
         ))}
 
-        <li>
+        <div>
           {currentStoryId ? (
             <StorybookLink revalidateRoot={revalidateRoot} />
           ) : (
             <StoryForm saveStory={saveStory} />
           )}
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   );
 }

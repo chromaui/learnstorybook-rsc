@@ -1,11 +1,13 @@
 import React from 'react';
 import TaskList from '@/components/TaskList';
-import { getTasks } from '@/data/tasks';
-import '../../index.css';
+import { useTasks } from '@/data/tasks';
+import { useRouter } from 'next/router';
 
-export default async function TaskScreen({ params: { id } }: { params: { id: string } }) {
+export default function TaskScreen() {
+  const router = useRouter();
+  const [id] = ([] as (string | undefined)[]).concat(router.query.id);
   try {
-    const tasks = await getTasks();
+    const tasks = useTasks();
     return (
       <div className="page lists-show">
         <nav>

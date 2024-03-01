@@ -1,8 +1,8 @@
 import React from 'react';
-import { Task, getTask } from '@/data/tasks';
+import { Task, useTask } from '@/data/tasks';
 import Link from 'next/link';
 
-export default async function TaskItem({
+export default function TaskItem({
   task: { id, title, state },
   expanded,
   onArchiveTask,
@@ -13,7 +13,7 @@ export default async function TaskItem({
   onArchiveTask: () => Promise<void>;
   onPinTask: () => Promise<void>;
 }) {
-  const description = expanded ? (await getTask(id)).description : false;
+  const task = useTask(id);
 
   return (
     <>
@@ -55,7 +55,7 @@ export default async function TaskItem({
             </button>
           </form>
         )}
-        {description && <div className="task-description">{description}</div>}
+        {expanded && task && <div className="task-description">{task.description}</div>}
       </Link>
     </>
   );

@@ -1,11 +1,10 @@
 import React from 'react';
 import TaskList from '@/components/TaskList';
-import { getTasks } from '@/data/tasks';
-import './index.css';
+import { useTasks } from '@/data/tasks';
 
-export default async function InboxScreen() {
+export default function InboxScreen() {
   try {
-    const tasks = await getTasks();
+    const tasks = useTasks();
     return (
       <div className="page lists-show">
         <nav>

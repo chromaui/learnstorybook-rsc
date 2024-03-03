@@ -1,5 +1,5 @@
-import * as inboxStories from '@/app/stories';
-import * as taskStories from '@/app/tasks/[id]/stories';
+import * as inboxStories from './stories/stories';
+import * as taskStories from './stories/task-stories';
 
 export type IndexEntry = {
   title: string;

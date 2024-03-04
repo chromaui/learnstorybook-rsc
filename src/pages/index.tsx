@@ -4,13 +4,13 @@ import { useTasks } from '@/data/tasks';
 
 export default function InboxScreen() {
   try {
-    const tasks = useTasks();
+    const [tasks, setTaskState] = useTasks();
     return (
       <div className="page lists-show">
         <nav>
           <h1 className="title-page">Taskbox</h1>
         </nav>
-        <TaskList tasks={tasks} />
+        <TaskList tasks={tasks} setTaskState={setTaskState} />
       </div>
     );
   } catch (error) {

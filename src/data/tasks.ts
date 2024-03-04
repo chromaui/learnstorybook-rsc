@@ -1,6 +1,6 @@
 import { revalidatePath } from 'next/cache';
 import { faker } from '@faker-js/faker';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 let seeded = false;
 
@@ -49,7 +49,14 @@ export const useTasks = () => {
     throw new Error(error);
   }
 
-  return tasksVal;
+  const setTaskState = useCallback(
+    (id: Task['id'], state: Task['state']) => {
+      setTasks(tasksVal?.map((t) => (t.id === id ? { ...t, state } : t)));
+    },
+    [tasksVal, setTasks]
+  );
+
+  return [tasksVal, setTaskState] as const;
 };
 
 async function getDescription(id: Task['id']) {
@@ -65,22 +72,3 @@ export const useTaskDescription = (id: Task['id'] | false) => {
 
   return description;
 };
-
-export const updateTaskState = () => {};
-// export const updateTaskState = async ({
-//   id,
-//   newTaskState,
-// }: {
-//   id: Task['id'];
-//   newTaskState: Task['state'];
-// }) => {
-
-//   console.log('updateTaskState', { id, newTaskState });
-
-//   const taskIndex = tasks.findIndex((task) => task.id === id);
-//   if (taskIndex >= 0) {
-//     tasks[taskIndex].state = newTaskState;
-//   }
-
-//   revalidatePath('/');
-// };

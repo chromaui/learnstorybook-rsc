@@ -1,8 +1,16 @@
 import React from 'react';
 import TaskItem from './TaskItem';
-import { updateTaskState, Task } from '../data/tasks';
+import type { Task } from '../data/tasks';
 
-export default function TaskList({ tasks, expanded }: { tasks?: Task[]; expanded?: Task['id'] }) {
+export default function TaskList({
+  tasks,
+  expanded,
+  setTaskState,
+}: {
+  tasks?: Task[];
+  expanded?: Task['id'];
+  setTaskState: (id: Task['id'], state: Task['state']) => void;
+}) {
   if (!tasks) {
     const LoadingRow = (
       <div className="loading-item">
@@ -52,8 +60,8 @@ export default function TaskList({ tasks, expanded }: { tasks?: Task[]; expanded
           key={task.id}
           expanded={expanded === task.id}
           task={task}
-          onPinTask={updateTaskState.bind(null, { id: task.id, newTaskState: 'TASK_PINNED' })}
-          onArchiveTask={updateTaskState.bind(null, { id: task.id, newTaskState: 'TASK_ARCHIVED' })}
+          onPinTask={setTaskState.bind(null, task.id, 'TASK_PINNED')}
+          onArchiveTask={setTaskState.bind(null, task.id, 'TASK_ARCHIVED')}
         />
       ))}
     </div>

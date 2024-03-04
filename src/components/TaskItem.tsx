@@ -10,28 +10,26 @@ export default function TaskItem({
 }: {
   task: Task;
   expanded: boolean;
-  onArchiveTask: () => Promise<void>;
-  onPinTask: () => Promise<void>;
+  onArchiveTask: () => void;
+  onPinTask: () => void;
 }) {
   const description = useTaskDescription(expanded && id);
 
   return (
     <>
-      <Link href={`/tasks/${id}`} className={`list-item ${state} ${expanded ? 'expanded' : ''}`}>
-        <form>
-          <label htmlFor="checked" aria-label={`archiveTask-${id}`} className="checkbox">
-            <input
-              type="checkbox"
-              disabled={true}
-              name="checked"
-              id={`archiveTask-${id}`}
-              checked={state === 'TASK_ARCHIVED'}
-            />
-            <button type="submit" className="checkbox-custom" />
-          </label>
-        </form>
+      <div className={`list-item ${state} ${expanded ? 'expanded' : ''}`}>
+        <label htmlFor="checked" aria-label={`archiveTask-${id}`} className="checkbox">
+          <input
+            type="checkbox"
+            disabled={true}
+            name="checked"
+            id={`archiveTask-${id}`}
+            checked={state === 'TASK_ARCHIVED'}
+          />
+          <span className="checkbox-custom" onClick={onArchiveTask} />
+        </label>
 
-        <label htmlFor="title" aria-label={title} className="title">
+        <Link href={`/tasks/${id}`} aria-label={title} className="title">
           <input
             type="text"
             value={title}
@@ -40,23 +38,22 @@ export default function TaskItem({
             placeholder="Input title"
             style={{ textOverflow: 'ellipsis' }}
           />
-        </label>
+        </Link>
 
         {state !== 'TASK_ARCHIVED' && (
-          <form>
-            <button
-              type="submit"
-              className="pin-button"
-              id={`pinTask-${id}`}
-              aria-label={`pinTask-${id}`}
-              key={`pinTask-${id}`}
-            >
-              <span className={`icon-star`} />
-            </button>
-          </form>
+          <button
+            type="submit"
+            className="pin-button"
+            id={`pinTask-${id}`}
+            aria-label={`pinTask-${id}`}
+            key={`pinTask-${id}`}
+            onClick={onPinTask}
+          >
+            <span className={`icon-star`} />
+          </button>
         )}
         {expanded && description && <div className="task-description">{description}</div>}
-      </Link>
+      </div>
     </>
   );
 }

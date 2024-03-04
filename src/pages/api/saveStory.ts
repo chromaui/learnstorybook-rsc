@@ -60,7 +60,7 @@ export async function saveStory(name: string, url: string, mockData: MockData) {
         title: '${title}',
         name: '${name}',
         key: '${exportName}',
-        importPath: '${csfFile}',
+        importPath: '${csfFile.replace('.tsx', '')}',
       },
     `;
 

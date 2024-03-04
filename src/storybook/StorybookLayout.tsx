@@ -131,6 +131,21 @@ export function StorybookLayout({ children }: { children: ReactNode }) {
           background: '#eee',
         }}
       >
+        {storyId ? (
+          <div
+            style={{
+              position: 'fixed',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              border: '3px dashed green',
+              pointerEvents: 'none',
+            }}
+          />
+        ) : (
+          ''
+        )}
         {ready ? (
           <div>
             {Object.entries(storyIndex).map(([id, { title, name }]) => (

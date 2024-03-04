@@ -13,6 +13,11 @@ import { type Args, composeStory } from '@storybook/react';
 import { storiesImports } from './storiesImports';
 // import { cookies } from 'next/headers';
 
+// Should we hard redirect you when you click on a story (to reset browser state)?
+// We'll probably make this default to true but allow it to be disabled (and use a soft redirect)
+// if the user takes care of resetting all browser state s
+const HARD_REDIRECT = true;
+
 const useStoryIndex = () => {
   const [storyIndex, setStoryIndex] = useState<StoryIndex>();
 
@@ -77,7 +82,12 @@ export function StorybookLayout({ children }: { children: ReactNode }) {
 
       if (storyId) {
         console.log('routing to redirect route');
-        router.push(`/storybook-redirect/${storyId}`);
+        const url = `/storybook-redirect/${storyId}`;
+        if (HARD_REDIRECT) {
+          document.location = url;
+        } else {
+          router.push(url);
+        }
       } else {
         router.push('/');
       }
@@ -85,7 +95,6 @@ export function StorybookLayout({ children }: { children: ReactNode }) {
     [setStoryId, router]
   );
 
-  const isRedirectMatch = router.pathname.match(/\/storybook-redirect\/[a-z\-]+/);
   const matchedStoryId = ([] as (string | void | false)[]).concat(
     router.pathname === '/storybook-redirect/[id]' && router.query.id
   )[0];

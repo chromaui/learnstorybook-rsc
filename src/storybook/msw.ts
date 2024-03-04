@@ -14,11 +14,6 @@ export async function setupMsw(getMockData: () => Promise<MockData>) {
 
     const worker = setupWorker(
       http.get('*', async ({ request }) => {
-        // TODO : this seems to happen on HMR, not sure what's correct
-        if (!request) {
-          return passthrough();
-        }
-
         // console.log('intercepting', request.url, passingThrough.keys());
 
         // FIXME: always allow JS requests through. Otherwise we block the request that

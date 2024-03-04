@@ -16,15 +16,19 @@ const HARD_REDIRECT = true;
 
 const useStoryIndex = () => {
   const [storyIndex, setStoryIndex] = useState<StoryIndex>();
+  const [shouldFetch, setShouldFetch] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const response = await fetch('/api/storyIndex');
-      setStoryIndex(await response.json());
+      if (shouldFetch) {
+        const response = await fetch('/api/storyIndex');
+        setStoryIndex(await response.json());
+        setShouldFetch(false);
+      }
     })();
-  }, []);
+  }, [shouldFetch, setShouldFetch]);
 
-  return storyIndex;
+  return [storyIndex, () => setShouldFetch(true)] as const;
 };
 
 function isImportPath(importPath: string): importPath is keyof typeof storiesImports {
@@ -61,7 +65,7 @@ const useMsw = (getStory: () => Promise<{ args: Args } | void>) => {
 
 export function StorybookLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const storyIndex = useStoryIndex();
+  const [storyIndex, refetchStoryIndex] = useStoryIndex();
   const [storyId, setStoryId] = useState<StoryId | void>();
 
   const getStory = useCallback(async () => {
@@ -121,6 +125,8 @@ export function StorybookLayout({ children }: { children: ReactNode }) {
       body: JSON.stringify({ name, url, data }),
       headers,
     });
+    setSaving(false);
+    refetchStoryIndex();
   };
 
   return (

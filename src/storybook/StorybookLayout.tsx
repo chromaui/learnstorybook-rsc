@@ -80,16 +80,16 @@ export function StorybookLayout({ children }: { children: ReactNode }) {
     async (storyId: StoryId | void) => {
       setStoryId(storyId);
 
+      let url: string;
       if (storyId) {
-        console.log('routing to redirect route');
-        const url = `/storybook-redirect/${storyId}`;
-        if (HARD_REDIRECT) {
-          document.location = url;
-        } else {
-          router.push(url);
-        }
+        url = `/storybook-redirect/${storyId}`;
       } else {
-        router.push('/');
+        url = '/';
+      }
+      if (HARD_REDIRECT) {
+        document.location = url;
+      } else {
+        router.push(url);
       }
     },
     [setStoryId, router]

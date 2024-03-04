@@ -49,7 +49,9 @@ export async function saveStory(name: string, url: string, mockData: MockData) {
       };
     `;
 
-  const csfFile = isIndex ? './src/stories/stories.tsx' : './src/stories/task-stories.tsx';
+  const csfFile = isIndex
+    ? './src/storybook/stories/stories.tsx'
+    : './src/storybook/stories/task-stories.tsx';
   const csfContents = (await readFile(csfFile)).toString('utf-8');
   await writeFile(csfFile, `${csfContents}\n\n${story}`);
 
@@ -57,12 +59,12 @@ export async function saveStory(name: string, url: string, mockData: MockData) {
       '${id}': {
         title: '${title}',
         name: '${name}',
-        csf: ${isIndex ? 'inboxStories' : 'taskStories'},
         key: '${exportName}',
+        importPath: '${csfFile}',
       },
     `;
 
-  const indexFile = './src/storyIndex.ts';
+  const indexFile = './src/storybook/storyIndex.ts';
   const indexContents = (await readFile(indexFile)).toString('utf8');
   const match = 'export const storyIndex: StoryIndex = {';
   await writeFile(indexFile, indexContents.replace(`${match}`, `${match}\n${indexEntry}`));

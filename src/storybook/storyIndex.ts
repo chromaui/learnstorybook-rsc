@@ -12,37 +12,37 @@ export const storyIndex: StoryIndex = {
     title: 'Inbox',
     name: 'Basic',
     key: 'Basic',
-    importPath: './stories/stories',
+    importPath: './src/storybook/stories/stories',
   },
   'inbox--empty': {
     title: 'Inbox',
     name: 'Empty',
     key: 'Empty',
-    importPath: './stories/stories',
+    importPath: './src/storybook/stories/stories',
   },
   'inbox--errored': {
     title: 'Inbox',
     name: 'Errored',
     key: 'Errored',
-    importPath: './stories/stories',
+    importPath: './src/storybook/stories/stories',
   },
 
   'task-page--first': {
     title: 'Task Page',
     name: 'First',
     key: 'First',
-    importPath: './stories/task-stories',
+    importPath: './src/storybook/stories/task-stories',
   },
   'task-page--last': {
     title: 'Task Page',
     name: 'Last',
     key: 'Last',
-    importPath: './stories/task-stories',
+    importPath: './src/storybook/stories/task-stories',
   },
   'task-page--last-long-description': {
     title: 'Task Page',
     name: 'Last Long Description',
     key: 'LastLongDescription',
-    importPath: './stories/task-stories',
+    importPath: './src/storybook/stories/task-stories',
   },
 };

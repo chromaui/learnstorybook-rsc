@@ -1,4 +1,4 @@
 export const storiesImports = {
-  './stories/stories': () => import('./stories/stories'),
-  './stories/task-stories': () => import('./stories/task-stories'),
+  './src/storybook/stories/stories': () => import('./stories/stories'),
+  './src/storybook/stories/task-stories': () => import('./stories/task-stories'),
 };

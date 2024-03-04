@@ -18,7 +18,7 @@ export default function TaskItem({
   return (
     <>
       <Link href={`/tasks/${id}`} className={`list-item ${state} ${expanded ? 'expanded' : ''}`}>
-        <form action={onArchiveTask}>
+        <form>
           <label htmlFor="checked" aria-label={`archiveTask-${id}`} className="checkbox">
             <input
               type="checkbox"
@@ -43,7 +43,7 @@ export default function TaskItem({
         </label>
 
         {state !== 'TASK_ARCHIVED' && (
-          <form action={onPinTask}>
+          <form>
             <button
               type="submit"
               className="pin-button"

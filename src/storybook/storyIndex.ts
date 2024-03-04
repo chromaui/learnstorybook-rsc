@@ -1,6 +1,7 @@
 import * as inboxStories from './stories/stories';
 import * as taskStories from './stories/task-stories';
 
+export type StoryId = string;
 export type IndexEntry = {
   title: string;
   name: string;
@@ -8,7 +9,7 @@ export type IndexEntry = {
   key: string;
 };
 
-export const storyIndex: Record<string, IndexEntry> = {
+export const storyIndex: Record<StoryId, IndexEntry> = {
   'inbox--basic': {
     title: 'Inbox',
     name: 'Basic',

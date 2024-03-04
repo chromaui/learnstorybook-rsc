@@ -1,13 +1,12 @@
 import React from 'react';
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
-import { StorybookModal } from '../storybook/StorybookModal';
+import { StorybookLayout } from '../storybook/StorybookLayout';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <>
-      <StorybookModal />
+    <StorybookLayout>
       <Component {...pageProps} />
-    </>
+    </StorybookLayout>
   );
 }

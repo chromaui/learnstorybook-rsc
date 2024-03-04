@@ -2,7 +2,7 @@ import { Task, TaskWithDescription } from '@/data/tasks';
 
 const meta = {
   title: 'Task Page',
-  url: '/tasks/[id]',
+  parameters: { url: '/tasks/[id]' },
 };
 
 export default meta;
@@ -13,7 +13,7 @@ export const First = {
       id: '1',
     },
     $mock: {
-      getTasks: [
+      'jsonplaceholder.typicode.com/todos': [
         {
           id: '1',
           title: 'First Task',
@@ -35,13 +35,10 @@ export const First = {
           state: 'TASK_INBOX',
         },
       ] satisfies Task[],
+      '/lorem': {
+        lorem: 'Quite a short description really',
+      },
     },
-    getTask: {
-      id: '1',
-      title: 'First Task',
-      state: 'TASK_INBOX',
-      description: 'Quite a short description really',
-    } satisfies TaskWithDescription,
   },
 };
 
@@ -51,12 +48,9 @@ export const Last = {
       id: '4',
     },
     $mock: {
-      getTasks: First.args.$mock.getTasks,
-      getTask: {
-        id: '4',
-        title: 'Fourth Task',
-        state: 'TASK_INBOX',
-        description: 'Another short description',
+      ...First.args.$mock,
+      '/lorem': {
+        lorem: 'Another short description',
       },
     },
   },
@@ -66,10 +60,9 @@ export const LastLongDescription = {
   args: {
     ...Last.args,
     $mock: {
-      getTasks: Last.args.$mock.getTasks,
-      getTask: {
-        ...Last.args.$mock.getTask,
-        description:
+      ...Last.args.$mock,
+      '/lorem': {
+        lorem:
           'An extremely long description that keeps on going and going and going and going and going and going and going and going and going and going and going and going and going',
       },
     },

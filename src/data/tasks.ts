@@ -11,32 +11,49 @@ export type Task = {
 };
 let _tasks: Task[] = [];
 
-async function seed() {
-  if (seeded) return _tasks;
+async function getTasks() {
   const response = await fetch('https://jsonplaceholder.typicode.com/todos?userId=1');
   const data = await response.json();
-  _tasks = data.map((task: { id: string; title: string; completed: boolean }) => ({
+  return data.map((task: { id: string; title: string; completed: boolean }) => ({
     id: `${task.id}`,
     title: task.title,
     state: task.completed ? 'TASK_ARCHIVED' : 'TASK_INBOX',
   }));
+}
+
+// TODO: what if data library looks something like this?
+async function seed() {
+  if (seeded) return _tasks;
+  _tasks = await getTasks();
   seeded = true;
 
   return _tasks;
 }
 
 export const useTasks = () => {
+  const [error, setError] = useState<string | void>();
   const [tasksVal, setTasks] = useState<Task[]>();
 
   useEffect(() => {
-    seed().then((tasks) => setTasks(tasks));
+    (async () => {
+      try {
+        setError(undefined);
+        setTasks(await getTasks());
+      } catch (err: any) {
+        setError(err.message);
+      }
+    })();
   }, []);
+
+  if (error) {
+    throw new Error(error);
+  }
 
   return tasksVal;
 };
 
-async function getDescription() {
-  const res = await fetch('/api/lorem');
+async function getDescription(id: Task['id']) {
+  const res = await fetch(`/api/lorem?id=${id}`);
   return (await res.json()).lorem;
 }
 
@@ -48,7 +65,7 @@ export const useTask = (id?: Task['id']) => {
 
   const [description, setDescription] = useState<string | null>();
   useEffect(() => {
-    getDescription().then((val) => setDescription(val));
+    id && getDescription(id).then((val) => setDescription(val));
   }, [id]);
 
   return {

@@ -2,7 +2,7 @@ import { Task } from '@/data/tasks';
 
 const meta = {
   title: 'Inbox',
-  url: '/',
+  parameters: { url: '/' },
 };
 
 export default meta;
@@ -10,7 +10,7 @@ export default meta;
 export const Basic = {
   args: {
     $mock: {
-      getTasks: [
+      'jsonplaceholder.typicode.com/todos': [
         {
           id: '1',
           title: 'First Task',
@@ -39,7 +39,7 @@ export const Basic = {
 export const Empty = {
   args: {
     $mock: {
-      getTasks: [] satisfies Task[],
+      'jsonplaceholder.typicode.com/todos': [] satisfies Task[],
     },
   },
 };
@@ -47,7 +47,7 @@ export const Empty = {
 export const Errored = {
   args: {
     $mock: {
-      getTasks: new Error('Fetching tasks failed'),
+      'jsonplaceholder.typicode.com/todos': new Error('Fetching tasks failed'),
     },
   },
 };

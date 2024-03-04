@@ -57,21 +57,13 @@ async function getDescription(id: Task['id']) {
   return (await res.json()).lorem;
 }
 
-export const useTask = (id?: Task['id']) => {
-  const [task, setTask] = useState<Task | null>();
-  useEffect(() => {
-    seed().then((tasks) => setTask(tasks.find((t) => t.id === id)));
-  }, [id]);
-
+export const useTaskDescription = (id: Task['id'] | false) => {
   const [description, setDescription] = useState<string | null>();
   useEffect(() => {
     id && getDescription(id).then((val) => setDescription(val));
   }, [id]);
 
-  return {
-    ...task,
-    description,
-  };
+  return description;
 };
 
 export const updateTaskState = () => {};

@@ -2,16 +2,12 @@ import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'reac
 
 import { StoryIndex, type StoryId, IndexEntry } from './storyIndex';
 import { StoryForm } from './StoryForm';
-// import { URL } from 'url';
-// import { readFile, writeFile } from 'fs/promises';
-// import { revalidatePath } from 'next/cache';
 import { StorybookLink } from './StorybookLink';
 import { useRouter } from 'next/router';
 import { renderStory } from './renderStory';
-import { setupMsw } from './msw';
+import { MockData, setupMsw } from './msw';
 import { type Args, composeStory } from '@storybook/react';
 import { storiesImports } from './storiesImports';
-// import { cookies } from 'next/headers';
 
 // Should we hard redirect you when you click on a story (to reset browser state)?
 // We'll probably make this default to true but allow it to be disabled (and use a soft redirect)
@@ -47,7 +43,7 @@ async function importStory(entry: IndexEntry) {
 }
 
 const useMsw = (getStory: () => Promise<{ args: Args } | void>) => {
-  const [ready, setReady] = useState(false);
+  const [getSavedData, setGetSavedData] = useState<() => MockData>();
   const getStoryRef = useRef(getStory);
   getStoryRef.current = getStory;
 
@@ -57,10 +53,10 @@ const useMsw = (getStory: () => Promise<{ args: Args } | void>) => {
 
       return story?.args?.$mock ?? {};
     };
-    setupMsw(getMockData).then(() => setReady(true));
+    setupMsw(getMockData).then((f) => setGetSavedData((_) => f));
   }, []);
 
-  return ready;
+  return getSavedData;
 };
 
 export function StorybookLayout({ children }: { children: ReactNode }) {
@@ -112,19 +108,28 @@ export function StorybookLayout({ children }: { children: ReactNode }) {
     })();
   }, [getStory, storyIndex, storyId, matchedStoryId, router]);
 
-  const saveStory = async () => {};
+  const getSavedData = useMsw(getStory);
+  const ready = !!getSavedData && !!storyIndex;
 
-  const mswReady = useMsw(getStory);
-  const ready = mswReady && !!storyIndex;
+  const [saving, setSaving] = useState(false);
+
+  const saveStory = async (name: string, url: string, data: MockData) => {
+    const headers = new Headers();
+    headers.set('content-type', 'application/json');
+    await fetch('/api/saveStory', {
+      method: 'POST',
+      body: JSON.stringify({ name, url, data }),
+      headers,
+    });
+  };
 
   return (
     <>
-      {mswReady ? children : ''}
+      {getSavedData ? children : ''}
       <div
         style={{
           position: 'fixed',
           bottom: '20px',
-
           left: '20px',
           width: '300px',
           height: '200px',
@@ -162,7 +167,7 @@ export function StorybookLayout({ children }: { children: ReactNode }) {
               {storyId ? (
                 <StorybookLink changeStory={changeStory} />
               ) : (
-                <StoryForm saveStory={saveStory} />
+                <button onClick={() => setSaving(true)}>Save Story</button>
               )}
             </div>
           </div>
@@ -170,6 +175,25 @@ export function StorybookLayout({ children }: { children: ReactNode }) {
           'Booting'
         )}
       </div>
+      {ready && saving ? (
+        <div
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            marginTop: '-300px',
+            marginLeft: '-300px',
+            width: '600px',
+            maxHeight: '600px',
+            overflow: 'scroll',
+            background: '#eee',
+          }}
+        >
+          <StoryForm savedData={getSavedData()} saveStory={saveStory} />
+        </div>
+      ) : (
+        ''
+      )}
     </>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task, useTask } from '@/data/tasks';
+import { Task, useTaskDescription } from '@/data/tasks';
 import Link from 'next/link';
 
 export default function TaskItem({
@@ -13,7 +13,7 @@ export default function TaskItem({
   onArchiveTask: () => Promise<void>;
   onPinTask: () => Promise<void>;
 }) {
-  const task = useTask(id);
+  const description = useTaskDescription(expanded && id);
 
   return (
     <>
@@ -55,7 +55,7 @@ export default function TaskItem({
             </button>
           </form>
         )}
-        {expanded && task && <div className="task-description">{task.description}</div>}
+        {expanded && description && <div className="task-description">{description}</div>}
       </Link>
     </>
   );

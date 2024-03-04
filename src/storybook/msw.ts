@@ -1,16 +1,15 @@
 import { setupWorker } from 'msw/browser'; // TODO also import from msw/node
 import { bypass, http, HttpResponse, passthrough } from 'msw';
 
-type MockData = Record<string, any>;
+export type MockData = Record<string, any>;
 
 export async function setupMsw(getMockData: () => Promise<MockData>) {
   if (typeof window !== 'undefined') {
-    console.log('setting up worker');
-    console.log(setupWorker);
-
     // This is a bit of a hack because msw's bypass seems broken
     // Also it doesn't work if you make >1 request to the same URL
     const passingThrough = new Set();
+
+    let savedRequests: MockData = {};
 
     const worker = setupWorker(
       http.get('*', async ({ request }) => {
@@ -29,7 +28,7 @@ export async function setupMsw(getMockData: () => Promise<MockData>) {
         const matching = Object.entries(mockData).find(([key]) =>
           request.url.match(new RegExp(key))
         );
-        console.log({ url: request.url, matching, keys: Object.keys(mockData) });
+        // console.log({ url: request.url, matching, keys: Object.keys(mockData) });
 
         if (matching) {
           if (matching[1] instanceof Error) {
@@ -45,6 +44,8 @@ export async function setupMsw(getMockData: () => Promise<MockData>) {
         if (response.headers.get('content-type')?.indexOf('application/json') !== -1) {
           const json = await response.json();
 
+          savedRequests[request.url] = json;
+
           return HttpResponse.json(json);
         } else {
           return response;
@@ -52,6 +53,12 @@ export async function setupMsw(getMockData: () => Promise<MockData>) {
       })
     );
 
-    return worker.start();
+    await worker.start();
+
+    return () => {
+      const result = savedRequests;
+      savedRequests = {};
+      return result;
+    };
   }
 }

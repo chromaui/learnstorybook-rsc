@@ -3,7 +3,7 @@ import { bypass, http, HttpResponse, passthrough } from 'msw';
 
 type MockData = Record<string, any>;
 
-export async function setupMsw(getMockData: () => MockData) {
+export async function setupMsw(getMockData: () => Promise<MockData>) {
   if (typeof window !== 'undefined') {
     console.log('setting up worker');
     console.log(setupWorker);
@@ -14,12 +14,23 @@ export async function setupMsw(getMockData: () => MockData) {
 
     const worker = setupWorker(
       http.get('*', async ({ request }) => {
-        console.log('intercepting', request.url);
-        if (passingThrough.has(request.url)) {
+        // TODO : this seems to happen on HMR, not sure what's correct
+        if (!request) {
           return passthrough();
         }
 
-        const mockData = getMockData();
+        // console.log('intercepting', request.url, passingThrough.keys());
+
+        // FIXME: always allow JS requests through. Otherwise we block the request that
+        // actually import's the story's JS file in order to find out if we should mock that request
+        // which is an unsolvable loop.
+        // We probably need to refactor this a bit to avoid this problem
+        const isJsRequest = request.url.endsWith('.js');
+        if (isJsRequest || passingThrough.has(request.url)) {
+          return passthrough();
+        }
+
+        const mockData = await getMockData();
         const matching = Object.entries(mockData).find(([key]) =>
           request.url.match(new RegExp(key))
         );

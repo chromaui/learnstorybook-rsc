@@ -1,4 +1,4 @@
-import { Task, TaskWithDescription } from '@/data/tasks';
+import { Task } from '@/data/tasks';
 
 const meta = {
   title: 'Task Page',

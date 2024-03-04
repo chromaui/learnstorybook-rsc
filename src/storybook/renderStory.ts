@@ -1,19 +1,16 @@
 // Rendering a story means setting up its mocks and changing route to it
 
+import type { Args, Parameters } from '@storybook/react';
 import type { NextRouter } from 'next/router';
-import { StoryId, storyIndex } from './storyIndex';
-import { composeStory } from '@storybook/react';
 
-export async function renderStory(storyId: StoryId, { router }: { router: NextRouter }) {
-  const entry = storyIndex[storyId];
-  if (!entry) throw new Error(`Unknown storyId "${storyId}"`);
-
-  const preparedStory = composeStory(entry.csf[entry.key], entry.csf.default, {}, entry.key);
-
-  const { url } = preparedStory.parameters;
+export async function renderStory(
+  { parameters, args }: { parameters: Parameters; args: Args },
+  { router }: { router: NextRouter }
+) {
+  const { url } = parameters;
   if (!url) throw new Error('No URL defined on story, needs to be PSF');
 
-  const { $url } = preparedStory.args;
+  const { $url } = args;
   const mappedUrl = url.replace('[id]', $url?.id);
 
   router.push(mappedUrl);

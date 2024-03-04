@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
-import { StoryId, storyIndex } from './storyIndex';
-// import { getLastRequestMockData } from '../mock';
+import { StoryIndex, type StoryId, IndexEntry } from './storyIndex';
 import { StoryForm } from './StoryForm';
 // import { URL } from 'url';
 // import { readFile, writeFile } from 'fs/promises';
@@ -9,39 +8,49 @@ import { StoryForm } from './StoryForm';
 import { StorybookLink } from './StorybookLink';
 import { useRouter } from 'next/router';
 import { renderStory } from './renderStory';
-import { setupMsw } from './msx';
-import { composeStory } from '@storybook/react';
+import { setupMsw } from './msw';
+import { type Args, composeStory } from '@storybook/react';
+import { storiesImports } from './storiesImports';
 // import { cookies } from 'next/headers';
 
-export const sanitize = (string: string) => {
-  return (
-    string
-      .toLowerCase()
-      // eslint-disable-next-line no-useless-escape
-      .replace(/[ ’–—―′¿'`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-+/, '')
-      .replace(/-+$/, '')
-  );
-};
-
-const useMsw = (storyId: StoryId | void) => {
-  const [ready, setReady] = useState(false);
-  const storyIdRef = useRef(storyId);
-  storyIdRef.current = storyId;
+const useStoryIndex = () => {
+  const [storyIndex, setStoryIndex] = useState<StoryIndex>();
 
   useEffect(() => {
-    const getMockData = () => {
-      if (!storyIdRef.current) return {};
+    (async () => {
+      const response = await fetch('/api/storyIndex');
+      setStoryIndex(await response.json());
+    })();
+  }, []);
 
-      console.log(`getting mock data for ${storyIdRef.current}`);
-      const entry = storyIndex[storyIdRef.current];
-      if (!entry) throw new Error(`Unknown storyId "${storyIdRef.current}"`);
+  return storyIndex;
+};
 
-      const { args } = composeStory(entry.csf[entry.key], entry.csf.default, {}, entry.key);
+function isImportPath(importPath: string): importPath is keyof typeof storiesImports {
+  return Object.keys(storiesImports).includes(importPath);
+}
 
-      console.log(args);
-      return args.$mock;
+async function importStory(entry: IndexEntry) {
+  if (!isImportPath(entry.importPath)) throw new Error(`Unexpected import ${entry.importPath}`);
+  const csf = await storiesImports[entry.importPath]();
+
+  if (!(entry.key in csf))
+    throw new Error(`Didn't find key "${entry.key}" in CSF from ${entry.importPath}`);
+  const story = composeStory(csf[entry.key as keyof typeof csf], csf.default, {}, entry.key);
+
+  return story;
+}
+
+const useMsw = (getStory: () => Promise<{ args: Args } | void>) => {
+  const [ready, setReady] = useState(false);
+  const getStoryRef = useRef(getStory);
+  getStoryRef.current = getStory;
+
+  useEffect(() => {
+    const getMockData = async () => {
+      const story = await getStoryRef.current();
+
+      return story?.args?.$mock ?? {};
     };
     setupMsw(getMockData).then(() => setReady(true));
   }, []);
@@ -49,9 +58,18 @@ const useMsw = (storyId: StoryId | void) => {
   return ready;
 };
 
-export function StorybookLayout({ children }) {
+export function StorybookLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const storyIndex = useStoryIndex();
   const [storyId, setStoryId] = useState<StoryId | void>();
+
+  const getStory = useCallback(async () => {
+    if (!storyId) return;
+
+    const entry = storyIndex && storyIndex[storyId];
+    if (!entry) throw new Error(`Cannot get story ${storyId}`);
+    return importStory(entry);
+  }, [storyIndex, storyId]);
 
   const changeStory = useCallback(
     async (storyId: StoryId | void) => {
@@ -59,7 +77,7 @@ export function StorybookLayout({ children }) {
 
       if (storyId) {
         console.log('routing to redirect route');
-        router.push('/storybook-redirect');
+        router.push(`/storybook-redirect/${storyId}`);
       } else {
         router.push('/');
       }
@@ -67,21 +85,28 @@ export function StorybookLayout({ children }) {
     [setStoryId, router]
   );
 
-  const isRedirect = router.pathname === '/storybook-redirect';
+  const isRedirectMatch = router.pathname.match(/\/storybook-redirect\/[a-z\-]+/);
+  const matchedStoryId = ([] as (string | void | false)[]).concat(
+    router.pathname === '/storybook-redirect/[id]' && router.query.id
+  )[0];
   useEffect(() => {
     (async () => {
-      if (isRedirect && storyId) {
-        console.log('routing to story');
-        await renderStory(storyId, { router });
+      if (matchedStoryId) {
+        if (storyId !== matchedStoryId) {
+          setStoryId(matchedStoryId);
+        } else if (storyIndex) {
+          const story = await getStory();
+          if (!story) throw new Error('Unexpected null story');
+          await renderStory(story, { router });
+        }
       }
     })();
-  }, [storyId, isRedirect]);
+  }, [getStory, storyIndex, storyId, matchedStoryId, router]);
 
   const saveStory = async () => {};
 
-  const mswReady = useMsw(storyId);
-
-  // const currentStoryId = cookies().get('__storyId__')?.value;
+  const mswReady = useMsw(getStory);
+  const ready = mswReady && !!storyIndex;
 
   return (
     <>
@@ -90,13 +115,14 @@ export function StorybookLayout({ children }) {
         style={{
           position: 'fixed',
           bottom: '20px',
+
           left: '20px',
           width: '300px',
           height: '200px',
           background: '#eee',
         }}
       >
-        {mswReady ? (
+        {ready ? (
           <div>
             {Object.entries(storyIndex).map(([id, { title, name }]) => (
               <div key={id}>

@@ -1,50 +1,48 @@
-import * as inboxStories from './stories/stories';
-import * as taskStories from './stories/task-stories';
-
 export type StoryId = string;
 export type IndexEntry = {
   title: string;
   name: string;
-  csf: Record<any, any>;
   key: string;
+  importPath: string;
 };
+export type StoryIndex = Record<StoryId, IndexEntry>;
 
-export const storyIndex: Record<StoryId, IndexEntry> = {
+export const storyIndex: StoryIndex = {
   'inbox--basic': {
     title: 'Inbox',
     name: 'Basic',
-    csf: inboxStories,
     key: 'Basic',
+    importPath: './stories/stories',
   },
   'inbox--empty': {
     title: 'Inbox',
     name: 'Empty',
-    csf: inboxStories,
     key: 'Empty',
+    importPath: './stories/stories',
   },
   'inbox--errored': {
     title: 'Inbox',
     name: 'Errored',
-    csf: inboxStories,
     key: 'Errored',
+    importPath: './stories/stories',
   },
 
   'task-page--first': {
     title: 'Task Page',
     name: 'First',
-    csf: taskStories,
     key: 'First',
+    importPath: './stories/task-stories',
   },
   'task-page--last': {
     title: 'Task Page',
     name: 'Last',
-    csf: taskStories,
     key: 'Last',
+    importPath: './stories/task-stories',
   },
   'task-page--last-long-description': {
     title: 'Task Page',
     name: 'Last Long Description',
-    csf: taskStories,
     key: 'LastLongDescription',
+    importPath: './stories/task-stories',
   },
 };

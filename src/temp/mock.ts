@@ -2,7 +2,7 @@ import { cookies, headers } from 'next/headers';
 // @ts-expect-error wrong react version
 import { cache } from 'react';
 import { storyIndex } from './storyIndex';
-import { composeStory } from '@storybook/react';
+import { composeStory } from './portable-stories';
 
 const getStoryMockData = cache(() => {
   const storyId = cookies().get('__storyId__')?.value;

@@ -45,16 +45,16 @@ export const useTasks = () => {
     })();
   }, []);
 
-  if (error) {
-    throw new Error(error);
-  }
-
   const setTaskState = useCallback(
     (id: Task['id'], state: Task['state']) => {
       setTasks(tasksVal?.map((t) => (t.id === id ? { ...t, state } : t)));
     },
     [tasksVal, setTasks]
   );
+
+  if (error) {
+    throw new Error(error);
+  }
 
   return [tasksVal, setTaskState] as const;
 };

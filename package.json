@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "workshop:format": "prettier --write"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
@@ -16,6 +17,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@antfu/ni": "^0.21.12",
     "@storybook/csf": "^0.1.2",
     "@storybook/csf-tools": "8.0.0-rc.1",
     "@storybook/types": "^8.0.0-rc.1",

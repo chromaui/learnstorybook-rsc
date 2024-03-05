@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { readFile, writeFile } from 'fs/promises';
+import { runCli, parseNr } from '@antfu/ni';
 import type { MockData } from '../../storybook/msw';
 
 export const sanitize = (string: string) => {
@@ -12,6 +13,21 @@ export const sanitize = (string: string) => {
       .replace(/^-+/, '')
       .replace(/-+$/, '')
   );
+};
+
+let packageJson: any;
+
+const FORMAT_COMMAND = 'workshop:format';
+export const formatFile = async (file: string) => {
+  if (!packageJson) {
+    packageJson = JSON.parse(await readFile('./package.json', 'utf-8'));
+  }
+  if (packageJson.scripts[FORMAT_COMMAND]) {
+    const args = `${FORMAT_COMMAND} -- ${file}`.split(' ');
+    await runCli((agent, _args) => {
+      return parseNr(agent, args);
+    });
+  }
 };
 
 export async function saveStory(name: string, url: string, mockData: MockData) {
@@ -54,6 +70,7 @@ export async function saveStory(name: string, url: string, mockData: MockData) {
     : './src/storybook/stories/task-stories.tsx';
   const csfContents = (await readFile(csfFile)).toString('utf-8');
   await writeFile(csfFile, `${csfContents}\n\n${story}`);
+  await formatFile(csfFile);
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<boolean>) {

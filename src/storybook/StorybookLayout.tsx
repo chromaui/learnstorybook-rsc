@@ -6,7 +6,8 @@ import { StorybookLink } from './StorybookLink';
 import { useRouter } from 'next/router';
 import { renderStory } from './renderStory';
 import { MockData, setupMsw } from './msw';
-import { type Args, composeStory } from '@storybook/react';
+import type { Args } from '@storybook/types';
+import { composeStory } from '../temp/portable-stories';
 import { storiesImports } from './storiesImports';
 
 // Should we hard redirect you when you click on a story (to reset browser state)?

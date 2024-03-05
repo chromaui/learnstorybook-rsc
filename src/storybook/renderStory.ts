@@ -1,6 +1,6 @@
 // Rendering a story means setting up its mocks and changing route to it
 
-import type { Args, Parameters } from '@storybook/react';
+import type { Args, Parameters } from '@storybook/types';
 import type { NextRouter } from 'next/router';
 
 export async function renderStory(

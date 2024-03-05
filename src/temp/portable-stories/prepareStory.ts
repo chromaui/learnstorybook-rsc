@@ -85,7 +85,8 @@ export function prepareStory<TRenderer extends Renderer>(
     storyAnnotations?.render ||
     componentAnnotations.render ||
     projectAnnotations.render;
-  if (!render) throw new Error(`No render function available for storyId '${id}'`);
+
+  // FIXME  if (!render) throw new Error(`No render function available for storyId '${id}'`);
 
   const decoratedStoryFn = applyDecorators(undecoratedStoryFn, decorators);
   const unboundStoryFn = (context: StoryContext<TRenderer>) => decoratedStoryFn(context);

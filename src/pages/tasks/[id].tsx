@@ -7,13 +7,13 @@ export default function TaskScreen() {
   const router = useRouter();
   const [id] = ([] as (string | undefined)[]).concat(router.query.id);
   try {
-    const tasks = useTasks();
+    const [tasks, setTaskState] = useTasks();
     return (
       <div className="page lists-show">
         <nav>
           <h1 className="title-page">Taskbox</h1>
         </nav>
-        <TaskList tasks={tasks} expanded={id} />
+        <TaskList tasks={tasks} expanded={id} setTaskState={setTaskState} />
       </div>
     );
   } catch (error) {

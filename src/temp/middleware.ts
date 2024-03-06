@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { composeStory } from '@storybook/react';
+import { composeStory } from './portable-stories';
 import { storyIndex } from './storyIndex';
 
 const sessionIdCookieName = '__storybookSessionId__';

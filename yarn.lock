@@ -12,6 +12,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@antfu/ni@npm:^0.21.12":
+  version: 0.21.12
+  resolution: "@antfu/ni@npm:0.21.12"
+  bin:
+    na: bin/na.mjs
+    nci: bin/nci.mjs
+    ni: bin/ni.mjs
+    nlx: bin/nlx.mjs
+    nr: bin/nr.mjs
+    nu: bin/nu.mjs
+    nun: bin/nun.mjs
+  checksum: 10c0/729e03cdde75087bd1e959357fa69caf5c8ecf80087f19ac07ecceeb0def3eabbe87a8bd88a78444bea321cce8e385a1c90dca4b5146c351e32c2a516c2d9ea2
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.23.5":
   version: 7.23.5
   resolution: "@babel/code-frame@npm:7.23.5"
@@ -3606,6 +3621,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "learnstorybook-rsc@workspace:."
   dependencies:
+    "@antfu/ni": "npm:^0.21.12"
     "@faker-js/faker": "npm:^8.4.1"
     "@storybook/csf": "npm:^0.1.2"
     "@storybook/csf-tools": "npm:8.0.0-rc.1"

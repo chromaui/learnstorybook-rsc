@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { readFile, writeFile } from 'fs/promises';
 import type { MockData } from '../../storybook/msw';
+import { execa } from 'execa';
+import { detect } from 'detect-package-manager';
 
 export const sanitize = (string: string) => {
   return (
@@ -12,6 +14,23 @@ export const sanitize = (string: string) => {
       .replace(/^-+/, '')
       .replace(/-+$/, '')
   );
+};
+
+let packageJson: any;
+
+const FORMAT_COMMAND = 'workshop:format';
+export const formatFile = async (file: string) => {
+  try {
+    if (!packageJson) {
+      packageJson = JSON.parse(await readFile('./package.json', 'utf-8'));
+    }
+    if (packageJson.scripts[FORMAT_COMMAND]) {
+      const packageManager = await detect();
+      await execa(packageManager, ['run', FORMAT_COMMAND, '--', file]);
+    }
+  } catch (e) {
+    console.log(`Error formatting '${file}':`, e);
+  }
 };
 
 export async function saveStory(name: string, url: string, mockData: MockData) {
@@ -54,6 +73,7 @@ export async function saveStory(name: string, url: string, mockData: MockData) {
     : './src/storybook/stories/task-stories.tsx';
   const csfContents = (await readFile(csfFile)).toString('utf-8');
   await writeFile(csfFile, `${csfContents}\n\n${story}`);
+  await formatFile(csfFile);
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<boolean>) {
